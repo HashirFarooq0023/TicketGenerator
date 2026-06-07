@@ -23,7 +23,8 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser
 app.use(cookieParser());
 
-// Set view engine
+// Set view engine and views directory
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 // Static folder
