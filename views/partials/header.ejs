@@ -1,0 +1,27 @@
+<header>
+    <nav class="container" style="max-width: 1600px;">
+        <a href="/" class="logo"><span class="gradient-text">IT Support Team</span></a>
+        <ul class="nav-links">
+            <li><a href="/" class="<%= title.includes('Home') ? 'active' : '' %>">Home</a></li>
+            <li><a href="/about" class="<%= title.includes('About') ? 'active' : '' %>">About Us</a></li>
+            <li><a href="/contact" class="<%= title.includes('Contact') ? 'active' : '' %>">Contact Us</a></li>
+            <% if (locals.user) { %>
+                <li><a href="/dashboard" class="<%= title.includes('Dashboard') ? 'active' : '' %>">Dashboard</a></li>
+            <% } %>
+        </ul>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <% if (locals.user) { %>
+                <span style="color: var(--text-secondary); font-size: 0.9rem;">
+                    Hello, <strong style="color: var(--text-primary);"><%= user.name %></strong>
+                    <span style="font-size: 0.75rem; background: var(--glass-border); padding: 0.2rem 0.5rem; border-radius: 0.25rem; margin-left: 0.25rem; text-transform: uppercase;">
+                        <%= user.role %>
+                    </span>
+                </span>
+                <a href="/logout" class="btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--glass-border);">Logout</a>
+            <% } else { %>
+                <a href="/login" class="btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem; background: transparent; border: 1px solid var(--glass-border);">Login</a>
+                <a href="/register" class="btn-primary" style="font-size: 0.8rem; padding: 0.5rem 1rem;">Register</a>
+            <% } %>
+        </div>
+    </nav>
+</header>

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('partials/head') %>
+    <style>
+        .badge-status {
+            padding: 0.35rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-open {
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-secondary);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+        .status-progress {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .status-resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .badge-priority {
+            padding: 0.35rem 0.8rem;
+            border-radius: 0.375rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .priority-high {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        .priority-medium {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .priority-low {
+            background: rgba(148, 163, 184, 0.15);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <%- include('partials/header') %>
+
+        <main class="container" style="padding: 3rem 1.5rem; min-height: 80vh;">
+            
+            <a href="/dashboard" class="btn-primary" style="background: transparent; border: 1px solid var(--glass-border); padding: 0.5rem 1rem; font-size: 0.85rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                &larr; Back to Dashboard
+            </a>
+
+            <% if (locals.error) { %>
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 2rem; font-size: 0.9rem;">
+                    <%= error %>
+                </div>
+            <% } %>
+            
+            <% if (locals.message) { %>
+                <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 2rem; font-size: 0.9rem;">
+                    <%= message %>
+                </div>
+            <% } %>
+
+            <div class="glass-card animate-fade-in-up" style="padding: 3rem;">
+                <!-- Header Metadata -->
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--glass-border); padding-bottom: 1.5rem; margin-bottom: 2rem; gap: 1rem; flex-wrap: wrap;">
+                    <div>
+                        <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--accent-primary); letter-spacing: 0.05em; font-weight: 700;">
+                            Ticket ID: <%= ticket._id %>
+                        </span>
+                        <h1 style="font-size: 2.5rem; margin-top: 0.5rem; margin-bottom: 1rem; color: var(--text-primary);">
+                            <%= ticket.title %>
+                        </h1>
+                        <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.25rem;">
+                            <span>Submitted: <strong><%= new Date(ticket.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'short' }) %></strong></span>
+                            <% if (ticket.createdBy) { %>
+                                <span>Submitted By: <strong><%= ticket.createdBy.name %></strong> (<%= ticket.createdBy.email %>)</span>
+                            <% } %>
+                            <% if (ticket.roomNumber) { %>
+                                <span>Location: <strong style="color: var(--accent-primary);">📍 <%= ticket.roomNumber %></strong></span>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-top: 0.5rem;">
+                        <!-- Status Badge -->
+                        <% if (ticket.status === 'Open') { %>
+                            <span class="badge-status status-open">Open</span>
+                        <% } else if (ticket.status === 'In Progress') { %>
+                            <span class="badge-status status-progress">In Progress</span>
+                        <% } else { %>
+                            <span class="badge-status status-resolved">Resolved</span>
+                        <% } %>
+
+                        <!-- Priority Badge -->
+                        <% if (ticket.priority === 'High') { %>
+                            <span class="badge-priority priority-high">High Priority</span>
+                        <% } else if (ticket.priority === 'Low') { %>
+                            <span class="badge-priority priority-low">Low Priority</span>
+                        <% } else { %>
+                            <span class="badge-priority priority-medium">Medium Priority</span>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Description/Content -->
+                <div style="margin-bottom: 3rem;">
+                    <h3 style="color: var(--text-primary); margin-bottom: 1rem;">Issue Details</h3>
+                    <div style="background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 2rem; line-height: 1.8; color: var(--text-primary); font-size: 1.05rem; white-space: pre-wrap;">
+                        <%= ticket.description %>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div style="border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; gap: 1rem; justify-content: flex-end;">
+                    <% if (ticket.status !== 'Resolved') { %>
+                        <form action="/tickets/<%= ticket._id %>/update" method="POST" style="display: inline;">
+                            <input type="hidden" name="status" value="Resolved">
+                            <button type="submit" class="btn-primary" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 0.75rem 2rem;">Resolve Ticket</button>
+                        </form>
+                    <% } %>
+                    <a href="/tickets/<%= ticket._id %>/edit" class="btn-primary" style="padding: 0.75rem 2rem; text-decoration: none;">Edit Details</a>
+                    <form action="/tickets/<%= ticket._id %>/delete" method="POST" style="display: inline;">
+                        <button type="submit" class="btn-primary" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #f87171; padding: 0.75rem 2rem;">Delete Ticket</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <%- include('partials/footer') %>
+</body>
+
+</html>
